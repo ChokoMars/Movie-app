@@ -31,6 +31,13 @@ export default class App extends Component {
     })
   }
 
+  componentDidCatch(error, info) {
+    this.setState({
+      error: true,
+      errorInfo: info,
+    })
+  }
+
   getMovies = (query = 'return', page = 1) => {
     this.setState({ loading: true, currentPage: page })
     this.movieApi
@@ -56,8 +63,8 @@ export default class App extends Component {
       })
   }
 
-  paginationChange = (evt) => {
-    this.getMovies(this.state.query, evt)
+  paginationChange = (num) => {
+    this.getMovies(this.state.query, num)
   }
 
   rateMovie = (id, rate) => {
@@ -68,9 +75,9 @@ export default class App extends Component {
     })
   }
 
-  onTabChanged = (evt) => {
+  onTabChanged = (tab) => {
     const { query } = this.state
-    if (evt === 'search') {
+    if (tab === 'search') {
       this.getMovies(query || 'return')
     } else {
       this.getRated(1)
@@ -80,7 +87,7 @@ export default class App extends Component {
   render() {
     const { loading, error, movies, currentPage, total, rated, genres } = this.state
     const pagination =
-      movies.length > 0 && !loading && !error ? (
+      movies.length > 19 && !loading && !error ? (
         <Pagination
           className="pagination"
           defaultCurrent={1}
@@ -129,15 +136,28 @@ export default class App extends Component {
       { label: 'Search', key: 'search', children: searchTab },
       { label: 'Rated', key: 'rated', children: ratedTab },
     ]
+
+    if (error) {
+      return (
+        <Alert
+          className="offline-error"
+          message="Internet connection lost"
+          description="Check your internet connection and try again"
+          type="error"
+          showIcon
+        />
+      )
+    }
+
     return (
       <div className="app">
-        <Online>
-          <div className="page-wrapper">
-            <MovieApiProvider value={genres}>
-              <Tabs items={items} onChange={(e) => this.onTabChanged(e)} />
-            </MovieApiProvider>
-          </div>
-        </Online>
+        {/* <Online> */}
+        <div className="page-wrapper">
+          <MovieApiProvider value={genres}>
+            <Tabs items={items} onChange={(e) => this.onTabChanged(e)} />
+          </MovieApiProvider>
+        </div>
+        {/* </Online>
         <Offline>
           <Alert
             className="offline-error"
@@ -146,7 +166,7 @@ export default class App extends Component {
             type="error"
             showIcon
           />
-        </Offline>
+        </Offline> */}
       </div>
     )
   }

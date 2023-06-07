@@ -5,7 +5,7 @@ import { debounce } from 'lodash'
 function SearchInput({ getMovies }) {
   const debounceRequest = debounce((query) => {
     getMovies(query)
-  }, 300)
+  }, 600)
 
   const onChange = (evt) => {
     debounceRequest(evt.target.value || 'return')
